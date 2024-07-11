@@ -130,7 +130,7 @@ FROM   Purchasing.PurchaseOrders AS PurchaseOrders
 		INNER JOIN Purchasing.Suppliers AS Suppliers 
 			ON PurchaseOrders.SupplierID = Suppliers.SupplierID 
 		INNER JOIN Application.DeliveryMethods AS DeliveryMethods 
-			ON PurchaseOrders.DeliveryMethodID = Suppliers.DeliveryMethodID 
+			ON PurchaseOrders.DeliveryMethodID = DeliveryMethods.DeliveryMethodID 
 		INNER JOIN Application.People AS People
 			ON PurchaseOrders.ContactPersonID = People.PersonID
 WHERE PurchaseOrders.ExpectedDeliveryDate BETWEEN  '2013-01-01' AND '2013-01-31'
@@ -153,7 +153,7 @@ FROM Sales.Orders AS Orders
 		ON Orders.CustomerID = Customers.CustomerID
 	LEFT OUTER JOIN Application.People AS People
 		ON Orders.SalespersonPersonID = People.PersonID
-ORDER BY Orders.OrderID DESC
+ORDER BY Orders.OrderDate DESC
 
              
 /*
@@ -171,4 +171,4 @@ FROM   Sales.Customers AS Customers
 			ON Orders.CustomerID = Customers.CustomerID 
 		INNER JOIN Sales.OrderLines AS OrderLines 
 			ON OrderLines.OrderID = Orders.OrderID
-WHERE (OrderLines.Description LIKE 'Chocolate frogs 250g')
+WHERE (OrderLines.Description = 'Chocolate frogs 250g')
