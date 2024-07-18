@@ -127,7 +127,7 @@ where InvoiceLines.StockItemID in (select top 3 StockItemID from Warehouse.Stock
 
 with cte_top_3_max as
 (
-    select top 3 
+    select top 3 with ties  
 		StockItemID from Warehouse.StockItems order by UnitPrice desc
 )
 
@@ -179,5 +179,54 @@ FROM Sales.Invoices
 ORDER BY TotalSumm DESC
 
 -- --
+/* 
+Запрос выбирает Инвойсы, сумма которых больше 27000
+Результат запроса показывает ID инвойса, Дату инвойса, Имя продавца, Сумму инвойса, Общая сумма заказанных товаров
+*/
 
-TODO: напишите здесь свое решение
+DROP VIEW IF EXISTS invoices
+Go 
+DROP VIEW IF EXISTS orders
+Go 
+
+CREATE VIEW invoices
+AS
+	SELECT 
+		InvoiceLines.InvoiceId, 
+		Invoices.OrderId,
+		Invoices.InvoiceDate,
+		People.FullName AS SalesPersonName,
+		SUM(InvoiceLines.Quantity*InvoiceLines.UnitPrice) AS TotalSummByInvoice
+	FROM Sales.InvoiceLines as InvoiceLines
+	INNER JOIN Sales.Invoices as Invoices
+	ON Invoices.InvoiceID = InvoiceLines.InvoiceID
+	LEFT JOIN Application.People as People
+	ON People.PersonID = Invoices.SalespersonPersonID
+	GROUP BY InvoiceLines.InvoiceId, Invoices.OrderId, Invoices.InvoiceDate, Invoices.SalespersonPersonID, People.FullName
+	HAVING SUM(Quantity*UnitPrice) > 27000
+Go
+
+CREATE VIEW orders
+AS
+	SELECT 
+		OrderLines.OrderId, 
+		SUM(OrderLines.PickedQuantity*OrderLines.UnitPrice) as TotalSummForPickedItems
+	FROM Sales.OrderLines as OrderLines
+	inner join Sales.Orders as Orders
+	on OrderLines.OrderId = Orders.OrderId
+	and Orders.PickingCompletedWhen IS NOT NULL
+	WHERE Orders.OrderId in (select OrderId from invoices)
+	GROUP BY OrderLines.OrderId
+Go
+
+
+select 
+	invoices.InvoiceId,
+	invoices.InvoiceDate,
+	invoices.SalesPersonName,
+	invoices.TotalSummByInvoice,
+	isnull(orders.TotalSummForPickedItems, 0) as TotalSummForPickedItems
+from invoices as invoices
+left join orders as orders
+on invoices.OrderId = orders.OrderId
+ORDER BY TotalSummByInvoice DESC
