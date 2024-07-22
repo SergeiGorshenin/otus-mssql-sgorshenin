@@ -184,13 +184,50 @@ ORDER BY TotalSumm DESC
 Результат запроса показывает ID инвойса, Дату инвойса, Имя продавца, Сумму инвойса, Общая сумма заказанных товаров
 */
 
-DROP VIEW IF EXISTS invoices
-Go 
-DROP VIEW IF EXISTS orders
-Go 
+drop table if exists #invoices
+drop table if exists #orders
 
-CREATE VIEW invoices
-AS
+SELECT 
+	InvoiceLines.InvoiceId, 
+	Invoices.OrderId,
+	Invoices.InvoiceDate,
+	People.FullName AS SalesPersonName,
+	SUM(InvoiceLines.Quantity*InvoiceLines.UnitPrice) AS TotalSummByInvoice
+INTO #invoices
+FROM Sales.InvoiceLines as InvoiceLines
+INNER JOIN Sales.Invoices as Invoices
+ON Invoices.InvoiceID = InvoiceLines.InvoiceID
+LEFT JOIN Application.People as People
+ON People.PersonID = Invoices.SalespersonPersonID
+GROUP BY InvoiceLines.InvoiceId, Invoices.OrderId, Invoices.InvoiceDate, Invoices.SalespersonPersonID, People.FullName
+HAVING SUM(Quantity*UnitPrice) > 27000
+
+SELECT 
+	OrderLines.OrderId, 
+	SUM(OrderLines.PickedQuantity*OrderLines.UnitPrice) as TotalSummForPickedItems
+INTO #orders
+FROM Sales.OrderLines as OrderLines
+inner join Sales.Orders as Orders
+on OrderLines.OrderId = Orders.OrderId
+and Orders.PickingCompletedWhen IS NOT NULL
+WHERE Orders.OrderId in (select OrderId from #invoices)
+GROUP BY OrderLines.OrderId
+
+select 
+	invoices.InvoiceId,
+	invoices.InvoiceDate,
+	invoices.SalesPersonName,
+	invoices.TotalSummByInvoice,
+	isnull(orders.TotalSummForPickedItems, 0) as TotalSummForPickedItems
+from #invoices as invoices
+left join #orders as orders
+on invoices.OrderId = orders.OrderId
+ORDER BY TotalSummByInvoice DESC
+
+-- CTE
+
+with invoices as
+(
 	SELECT 
 		InvoiceLines.InvoiceId, 
 		Invoices.OrderId,
@@ -204,10 +241,9 @@ AS
 	ON People.PersonID = Invoices.SalespersonPersonID
 	GROUP BY InvoiceLines.InvoiceId, Invoices.OrderId, Invoices.InvoiceDate, Invoices.SalespersonPersonID, People.FullName
 	HAVING SUM(Quantity*UnitPrice) > 27000
-Go
-
-CREATE VIEW orders
-AS
+)
+, orders as
+(
 	SELECT 
 		OrderLines.OrderId, 
 		SUM(OrderLines.PickedQuantity*OrderLines.UnitPrice) as TotalSummForPickedItems
@@ -217,8 +253,7 @@ AS
 	and Orders.PickingCompletedWhen IS NOT NULL
 	WHERE Orders.OrderId in (select OrderId from invoices)
 	GROUP BY OrderLines.OrderId
-Go
-
+)
 
 select 
 	invoices.InvoiceId,
