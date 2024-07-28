@@ -39,25 +39,22 @@ InvoiceMonth | Peeples Valley, AZ | Medicine Lodge, KS | Gasport, NY | Sylvanite
 -------------+--------------------+--------------------+-------------+--------------+------------
 */
 
-drop table if exists #invoices
-
-select 
-	REPLACE(REPLACE(Customers.CustomerName, 'Tailspin Toys (', ''), ')', '') as CustomerName,
-	DATETRUNC(month, Invoices.InvoiceDate) as InvoiceMonth,
-	count(Invoices.InvoiceID) as CountInvoiceID
-into #invoices
-from Sales.Invoices as Invoices
-left join Sales.Customers as Customers
-	on Invoices.CustomerID = Customers.CustomerID
-where Invoices.CustomerID between 2 and 6
-group by REPLACE(REPLACE(Customers.CustomerName, 'Tailspin Toys (', ''), ')', ''), DATETRUNC(month, Invoices.InvoiceDate)
-;
 with pivot_cte as(
 	select 
 		InvoiceMonth,
 		[Gasport, NY], [Jessie, ND], [Medicine Lodge, KS], [Peeples Valley, AZ], [Sylvanite, MT]
 	from 
-	(select InvoiceMonth, CustomerName, CountInvoiceID from #invoices)
+	--(select InvoiceMonth, CustomerName, CountInvoiceID from #invoices)
+	(select 
+		REPLACE(REPLACE(Customers.CustomerName, 'Tailspin Toys (', ''), ')', '') as CustomerName,
+		DATETRUNC(month, Invoices.InvoiceDate) as InvoiceMonth,
+		count(Invoices.InvoiceID) as CountInvoiceID
+	from Sales.Invoices as Invoices
+	left join Sales.Customers as Customers
+		on Invoices.CustomerID = Customers.CustomerID
+	where Invoices.CustomerID between 2 and 6
+	group by REPLACE(REPLACE(Customers.CustomerName, 'Tailspin Toys (', ''), ')', ''), DATETRUNC(month, Invoices.InvoiceDate)
+	)
 	as SourceTable
 	pivot
 	(
@@ -78,7 +75,6 @@ select
 from pivot_cte
 order by pivot_cte.InvoiceMonth
 
-
 /*
 2. Для всех клиентов с именем, в котором есть "Tailspin Toys"
 вывести все адреса, которые есть в таблице, в одной колонке.
@@ -94,23 +90,19 @@ Tailspin Toys (Head Office) | Ribeiroville
 ----------------------------+--------------------
 */
 
-select
+select CustomerName, AddressLine
+from (select
 	Customers.CustomerName,
-	cCustomers.Address as AddressLine
+	Customers.DeliveryAddressLine1,
+	Customers.DeliveryAddressLine2,
+	Customers.PostalAddressLine1,
+	Customers.PostalAddressLine2
 from Sales.Customers as Customers
-CROSS APPLY 
-	(
-		select	C.DeliveryAddressLine1 as Address from Sales.Customers as C where C.CustomerID = Customers.CustomerID
-		union all 
-		select	C.DeliveryAddressLine2 as Address from Sales.Customers as C where C.CustomerID = Customers.CustomerID
-		union all 
-		select	C.PostalAddressLine1 as Address from Sales.Customers as C where C.CustomerID = Customers.CustomerID
-		union all 
-		select	C.PostalAddressLine2 as Address from Sales.Customers as C where C.CustomerID = Customers.CustomerID
-	) as cCustomers
-where Customers.CustomerName like 'Tailspin Toys%'
-order by 1
-
+where Customers.CustomerName like 'Tailspin Toys%') as t
+unpivot
+(
+AddressLine for CustomerName1 in (t.DeliveryAddressLine1,t.DeliveryAddressLine2,t.PostalAddressLine1,PostalAddressLine2)
+) as T_unpivot
 
 /*
 3. В таблице стран (Application.Countries) есть поля с цифровым кодом страны и с буквенным.
@@ -128,18 +120,19 @@ CountryId | CountryName | Code
 ----------+-------------+-------
 */
 
-select 
-Countries.CountryID,
-Countries.CountryName,
-cCountries.Code
-from Application.Countries as Countries
-cross apply
-	(
-		select	C.IsoAlpha3Code as Code from Application.Countries as C where C.CountryID = Countries.CountryID
-		union all 
-		select	CAST(C.IsoNumericCode as CHAR(10)) from Application.Countries as C where C.CountryID = Countries.CountryID
-	) as cCountries
-order by 1, 3 desc
+select CountryID, CountryName, Code
+from (select
+	Countries.CountryID,
+	Countries.CountryName,
+	CAST(Countries.IsoAlpha3Code as CHAR(10)) as IsoAlpha3Code,
+	CAST(Countries.IsoNumericCode as CHAR(10)) as IsoNumericCode
+	from Application.Countries as Countries) as t
+unpivot
+(
+Code for CountryID1 in (t.IsoAlpha3Code,t.IsoNumericCode)
+) as T_unpivot
+
+
 
 /*
 4. Выберите по каждому клиенту два самых дорогих товара, которые он покупал.
@@ -158,7 +151,7 @@ left join Sales.Customers as Customers_1
 	on Invoices_1.CustomerID = Customers_1.CustomerID
 CROSS APPLY 
 	(
-		select distinct top 2 
+		select distinct top 2 with ties 
 		max(Invoices.InvoiceDate) over (partition by Invoices.CustomerID, StockItems.StockItemID order by Invoices.InvoiceDate desc) InvoiceDate,
 		StockItems.StockItemID,
 		StockItems.StockItemName,
