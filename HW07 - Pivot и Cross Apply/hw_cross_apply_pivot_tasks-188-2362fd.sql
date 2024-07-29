@@ -140,15 +140,13 @@ Code for CountryID1 in (t.IsoAlpha3Code,t.IsoNumericCode)
 */
 
 select distinct
-	Invoices_1.CustomerID,
+	Customers_1.CustomerID,
 	Customers_1.CustomerName as CustomerName,
 	StockItems_1.StockItemID,
 	StockItems_1.StockItemName,
 	StockItems_1.UnitPrice,
 	StockItems_1.InvoiceDate
-from Sales.Invoices as Invoices_1
-left join Sales.Customers as Customers_1
-	on Invoices_1.CustomerID = Customers_1.CustomerID
+from Sales.Customers as Customers_1
 CROSS APPLY 
 	(
 		select distinct top 2 with ties 
@@ -161,7 +159,7 @@ CROSS APPLY
 			on Invoices.InvoiceID = InvoiceLines.InvoiceID
 		inner join Warehouse.StockItems as StockItems
 			on InvoiceLines.StockItemID = StockItems.StockItemID
-		where Invoices.CustomerID = Invoices_1.CustomerID
+		where Invoices.CustomerID = Customers_1.CustomerID
 		ORDER BY StockItems.UnitPrice DESC
 	) AS StockItems_1
 order by 1, 3 desc, 5 desc
