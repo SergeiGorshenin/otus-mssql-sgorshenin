@@ -135,6 +135,14 @@ GO
 RECONFIGURE;  
 GO  
 
+/*
+EXEC sp_configure 'show advanced options', '1'
+RECONFIGURE
+-- this disables xp_cmdshell
+EXEC sp_configure 'xp_cmdshell', '0' 
+RECONFIGURE
+*/
+
 exec master..xp_cmdshell 'bcp WideWorldImporters.Purchasing.Suppliers out  "D:\courses\otus-mssql-sgorshenin\HW08 - Insert Update Merge\Suppliers.csv" -T -S my_lenovo\SQL2022 -c';
 
 drop table if exists Purchasing.Suppliers_bulked
