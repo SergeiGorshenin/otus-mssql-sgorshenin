@@ -111,59 +111,59 @@ CREATE TABLE [LineOrders] (
     )
 )
 
-ALTER TABLE [Buyers] WITH CHECK ADD CONSTRAINT [FK_Buyers_ID] FOREIGN KEY([ID])
-REFERENCES [Orders] ([BuyerID])
+ALTER TABLE [PointsSale] WITH CHECK ADD CONSTRAINT [FK_PointsSale_SellerID] FOREIGN KEY([SellerID])
+REFERENCES [Sellers] ([ID])
 
-ALTER TABLE [Buyers] CHECK CONSTRAINT [FK_Buyers_ID]
-
-ALTER TABLE [Sellers] WITH CHECK ADD CONSTRAINT [FK_Sellers_ID] FOREIGN KEY([ID])
-REFERENCES [PointsSale] ([SellerID])
-
-ALTER TABLE [Sellers] CHECK CONSTRAINT [FK_Sellers_ID]
-
-ALTER TABLE [PointsSale] WITH CHECK ADD CONSTRAINT [FK_PointsSale_ID] FOREIGN KEY([ID])
-REFERENCES [PointSaleProducts] ([PointSaleID])
-
-ALTER TABLE [PointsSale] CHECK CONSTRAINT [FK_PointsSale_ID]
-
-ALTER TABLE [ProductStandards] WITH CHECK ADD CONSTRAINT [FK_ProductStandards_ID] FOREIGN KEY([ID])
-REFERENCES [PointSaleProducts] ([ProductStandardID])
-
-ALTER TABLE [ProductStandards] CHECK CONSTRAINT [FK_ProductStandards_ID]
-
-ALTER TABLE [TypesPrices] WITH CHECK ADD CONSTRAINT [FK_TypesPrices_ID] FOREIGN KEY([ID])
-REFERENCES [ProductPrices] ([PriceTypeID])
-
-ALTER TABLE [TypesPrices] CHECK CONSTRAINT [FK_TypesPrices_ID]
-
-ALTER TABLE [PointSaleProducts] WITH CHECK ADD CONSTRAINT [FK_PointSaleProducts_ID] FOREIGN KEY([ID])
-REFERENCES [LineOrders] ([ProductPointSaleID])
-
-ALTER TABLE [PointSaleProducts] CHECK CONSTRAINT [FK_PointSaleProducts_ID]
+ALTER TABLE [PointsSale] CHECK CONSTRAINT [FK_PointsSale_SellerID]
 
 ALTER TABLE [PointSaleProducts] WITH CHECK ADD CONSTRAINT [FK_PointSaleProducts_PointSaleID] FOREIGN KEY([PointSaleID])
-REFERENCES [Orders] ([PointSaleID])
+REFERENCES [PointsSale] ([ID])
 
 ALTER TABLE [PointSaleProducts] CHECK CONSTRAINT [FK_PointSaleProducts_PointSaleID]
 
+ALTER TABLE [PointSaleProducts] WITH CHECK ADD CONSTRAINT [FK_PointSaleProducts_ProductStandardID] FOREIGN KEY([ProductStandardID])
+REFERENCES [ProductStandards] ([ID])
+
+ALTER TABLE [PointSaleProducts] CHECK CONSTRAINT [FK_PointSaleProducts_ProductStandardID]
+
 ALTER TABLE [PointSaleProducts] WITH CHECK ADD CONSTRAINT [FK_PointSaleProducts_ProductPricesID] FOREIGN KEY([ProductPricesID])
-REFERENCES [ProductPrices] ([ProductPointSaleID])
+REFERENCES [ProductPrices] ([ID])
 
 ALTER TABLE [PointSaleProducts] CHECK CONSTRAINT [FK_PointSaleProducts_ProductPricesID]
 
-ALTER TABLE [ProductPrices] WITH CHECK ADD CONSTRAINT [FK_ProductPrices_ID] FOREIGN KEY([ID])
-REFERENCES [LineOrders] ([ProductPriceID])
+ALTER TABLE [ProductPrices] WITH CHECK ADD CONSTRAINT [FK_ProductPrices_PriceTypeID] FOREIGN KEY([PriceTypeID])
+REFERENCES [TypesPrices] ([ID])
 
-ALTER TABLE [ProductPrices] CHECK CONSTRAINT [FK_ProductPrices_ID]
+ALTER TABLE [ProductPrices] CHECK CONSTRAINT [FK_ProductPrices_PriceTypeID]
 
-ALTER TABLE [OrderStatuses] WITH CHECK ADD CONSTRAINT [FK_OrderStatuses_ID] FOREIGN KEY([ID])
-REFERENCES [Orders] ([OrderStatusID])
+ALTER TABLE [Orders] WITH CHECK ADD CONSTRAINT [FK_Orders_PointSaleID] FOREIGN KEY([PointSaleID])
+REFERENCES [PointsSale] ([ID])
 
-ALTER TABLE [OrderStatuses] CHECK CONSTRAINT [FK_OrderStatuses_ID]
+ALTER TABLE [Orders] CHECK CONSTRAINT [FK_Orders_PointSaleID]
 
-ALTER TABLE [Orders] WITH CHECK ADD CONSTRAINT [FK_Orders_ID] FOREIGN KEY([ID])
-REFERENCES [LineOrders] ([OrderID])
+ALTER TABLE [Orders] WITH CHECK ADD CONSTRAINT [FK_Orders_BuyerID] FOREIGN KEY([BuyerID])
+REFERENCES [Buyers] ([ID])
 
-ALTER TABLE [Orders] CHECK CONSTRAINT [FK_Orders_ID]
+ALTER TABLE [Orders] CHECK CONSTRAINT [FK_Orders_BuyerID]
+
+ALTER TABLE [Orders] WITH CHECK ADD CONSTRAINT [FK_Orders_OrderStatusID] FOREIGN KEY([OrderStatusID])
+REFERENCES [OrderStatuses] ([ID])
+
+ALTER TABLE [Orders] CHECK CONSTRAINT [FK_Orders_OrderStatusID]
+
+ALTER TABLE [LineOrders] WITH CHECK ADD CONSTRAINT [FK_LineOrders_OrderID] FOREIGN KEY([OrderID])
+REFERENCES [Orders] ([ID])
+
+ALTER TABLE [LineOrders] CHECK CONSTRAINT [FK_LineOrders_OrderID]
+
+ALTER TABLE [LineOrders] WITH CHECK ADD CONSTRAINT [FK_LineOrders_ProductPointSaleID] FOREIGN KEY([ProductPointSaleID])
+REFERENCES [PointSaleProducts] ([ID])
+
+ALTER TABLE [LineOrders] CHECK CONSTRAINT [FK_LineOrders_ProductPointSaleID]
+
+ALTER TABLE [LineOrders] WITH CHECK ADD CONSTRAINT [FK_LineOrders_ProductPriceID] FOREIGN KEY([ProductPriceID])
+REFERENCES [ProductPrices] ([ID])
+
+ALTER TABLE [LineOrders] CHECK CONSTRAINT [FK_LineOrders_ProductPriceID]
 
 COMMIT TRANSACTION QUICKDBD
