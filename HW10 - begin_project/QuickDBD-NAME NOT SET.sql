@@ -9,7 +9,7 @@ BEGIN TRANSACTION QUICKDBD
 
 CREATE TABLE [Buyers] (
     [ID] int  NOT NULL ,
-    [FullName] nvarchar(70)  NOT NULL ,
+    [FullName] nvarchar(250)  NOT NULL ,
     [Address] nvarchar(250)  NOT NULL ,
     CONSTRAINT [PK_Buyers] PRIMARY KEY CLUSTERED (
         [ID] ASC
@@ -18,7 +18,7 @@ CREATE TABLE [Buyers] (
 
 CREATE TABLE [Sellers] (
     [ID] int  NOT NULL ,
-    [Name] nvarchar(70)  NOT NULL ,
+    [Name] nvarchar(250)  NOT NULL ,
     [INN] nvarchar(70)  NOT NULL ,
     CONSTRAINT [PK_Sellers] PRIMARY KEY CLUSTERED (
         [ID] ASC
@@ -37,7 +37,7 @@ CREATE TABLE [PointsSale] (
 )
 
 CREATE TABLE [ProductStandards] (
-    [ID] int  NOT NULL ,
+    [ID] bigint  NOT NULL ,
     [Name] nvarchar(70)  NOT NULL ,
     CONSTRAINT [PK_ProductStandards] PRIMARY KEY CLUSTERED (
         [ID] ASC
@@ -53,9 +53,9 @@ CREATE TABLE [TypesPrices] (
 )
 
 CREATE TABLE [PointSaleProducts] (
-    [ID] int  NOT NULL ,
+    [ID] bigint  NOT NULL ,
     [PointSaleID] int  NOT NULL ,
-    [ProductStandardID] int  NOT NULL ,
+    [ProductStandardID] bigint  NOT NULL ,
     [ProductInSellerSystemID] nvarchar(70)  NOT NULL ,
     [ProductInSellerSystemName] nvarchar(70)  NOT NULL ,
     [ProductPricesID] int  NOT NULL ,
@@ -70,8 +70,8 @@ CREATE TABLE [PointSaleProducts] (
 CREATE TABLE [ProductPrices] (
     [ID] int  NOT NULL ,
     [PriceTypeID] int  NOT NULL ,
-    [ProductPointSaleID] int  NOT NULL ,
-    [Price] int  NOT NULL ,
+    [ProductPointSaleID] bigint  NOT NULL ,
+    [Price] decimal(18,2)  NOT NULL ,
     [PriceUpdateDate] datetime2  NOT NULL ,
     CONSTRAINT [PK_ProductPrices] PRIMARY KEY CLUSTERED (
         [ID] ASC
@@ -87,7 +87,7 @@ CREATE TABLE [OrderStatuses] (
 )
 
 CREATE TABLE [Orders] (
-    [ID] int  NOT NULL ,
+    [ID] bigint  NOT NULL ,
     [Date] datetime2  NOT NULL ,
     [PointSaleID] int  NOT NULL ,
     [BuyerID] int  NOT NULL ,
@@ -99,12 +99,12 @@ CREATE TABLE [Orders] (
 )
 
 CREATE TABLE [LineOrders] (
-    [OrderID] int  NOT NULL ,
-    [ProductPointSaleID] int  NOT NULL ,
+    [OrderID] bigint  NOT NULL ,
+    [ProductPointSaleID] bigint  NOT NULL ,
     [ProductPriceID] int  NOT NULL ,
     [QuantityOrdered] int  NOT NULL ,
     [QuantityActual] int  NOT NULL ,
-    [Price] int  NOT NULL ,
+    [Price] decimal(18,2)  NOT NULL ,
     [Amount] int  NOT NULL ,
     CONSTRAINT [PK_LineOrders] PRIMARY KEY CLUSTERED (
         [OrderID] ASC
