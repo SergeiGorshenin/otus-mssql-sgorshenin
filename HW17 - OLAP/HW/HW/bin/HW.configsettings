@@ -1,0 +1,135 @@
+﻿<ConfigurationSettings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:ddl300="http://schemas.microsoft.com/analysisservices/2011/engine/300" xmlns:ddl300_300="http://schemas.microsoft.com/analysisservices/2011/engine/300/300" xmlns:ddl400="http://schemas.microsoft.com/analysisservices/2012/engine/400" xmlns:ddl400_400="http://schemas.microsoft.com/analysisservices/2012/engine/400/400" xmlns:ddl500="http://schemas.microsoft.com/analysisservices/2013/engine/500" xmlns:ddl500_500="http://schemas.microsoft.com/analysisservices/2013/engine/500/500" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0">
+  <Database>
+    <DataSources>
+      <DataSource>
+        <ID>Peoples Marketplace</ID>
+        <ConnectionString>Data Source=MY_LENOVO\SQL2022;Initial Catalog=PeoplesMarketplace;Integrated Security=True;Trust Server Certificate=True</ConnectionString>
+        <ManagedProvider>Microsoft.Data.SqlClient</ManagedProvider>
+        <ImpersonationInfo>
+          <ImpersonationMode xmlns="http://schemas.microsoft.com/analysisservices/2003/engine">ImpersonateServiceAccount</ImpersonationMode>
+          <ImpersonationInfoSecurity xmlns="http://schemas.microsoft.com/analysisservices/2003/engine">Unchanged</ImpersonationInfoSecurity>
+        </ImpersonationInfo>
+      </DataSource>
+    </DataSources>
+    <Dimensions>
+      <Dimension>
+        <ID>Point Sale Products</ID>
+      </Dimension>
+      <Dimension>
+        <ID>Product Prices</ID>
+      </Dimension>
+      <Dimension>
+        <ID>Orders</ID>
+      </Dimension>
+      <Dimension>
+        <ID>Buyers</ID>
+      </Dimension>
+      <Dimension>
+        <ID>Order Statuses</ID>
+      </Dimension>
+      <Dimension>
+        <ID>Points Sale</ID>
+      </Dimension>
+      <Dimension>
+        <ID>Product Standards</ID>
+      </Dimension>
+      <Dimension>
+        <ID>Sellers</ID>
+      </Dimension>
+      <Dimension>
+        <ID>Types Prices</ID>
+      </Dimension>
+    </Dimensions>
+    <Cubes>
+      <Cube>
+        <ID>Peoples Marketplace</ID>
+        <MeasureGroups>
+          <MeasureGroup>
+            <ID>Line Orders</ID>
+            <Partitions>
+              <Partition>
+                <ID>Line Orders</ID>
+              </Partition>
+            </Partitions>
+          </MeasureGroup>
+          <MeasureGroup>
+            <ID>Buyers</ID>
+            <Partitions>
+              <Partition>
+                <ID>Buyers</ID>
+              </Partition>
+            </Partitions>
+          </MeasureGroup>
+          <MeasureGroup>
+            <ID>Orders</ID>
+            <Partitions>
+              <Partition>
+                <ID>Orders</ID>
+              </Partition>
+            </Partitions>
+          </MeasureGroup>
+          <MeasureGroup>
+            <ID>Order Statuses</ID>
+            <Partitions>
+              <Partition>
+                <ID>Order Statuses</ID>
+              </Partition>
+            </Partitions>
+          </MeasureGroup>
+          <MeasureGroup>
+            <ID>Point Sale Products</ID>
+            <Partitions>
+              <Partition>
+                <ID>Point Sale Products</ID>
+              </Partition>
+            </Partitions>
+          </MeasureGroup>
+          <MeasureGroup>
+            <ID>Points Sale</ID>
+            <Partitions>
+              <Partition>
+                <ID>Points Sale</ID>
+              </Partition>
+            </Partitions>
+          </MeasureGroup>
+          <MeasureGroup>
+            <ID>Product Prices</ID>
+            <Partitions>
+              <Partition>
+                <ID>Product Prices</ID>
+              </Partition>
+            </Partitions>
+          </MeasureGroup>
+          <MeasureGroup>
+            <ID>Product Standards</ID>
+            <Partitions>
+              <Partition>
+                <ID>Product Standards</ID>
+              </Partition>
+            </Partitions>
+          </MeasureGroup>
+          <MeasureGroup>
+            <ID>Sellers</ID>
+            <Partitions>
+              <Partition>
+                <ID>Sellers</ID>
+              </Partition>
+            </Partitions>
+          </MeasureGroup>
+          <MeasureGroup>
+            <ID>Types Prices</ID>
+            <Partitions>
+              <Partition>
+                <ID>Types Prices</ID>
+              </Partition>
+            </Partitions>
+          </MeasureGroup>
+        </MeasureGroups>
+      </Cube>
+    </Cubes>
+    <DataSourceImpersonationInfo>
+      <ImpersonationMode xmlns="http://schemas.microsoft.com/analysisservices/2003/engine">Default</ImpersonationMode>
+      <ImpersonationInfoSecurity xmlns="http://schemas.microsoft.com/analysisservices/2003/engine">Unchanged</ImpersonationInfoSecurity>
+    </DataSourceImpersonationInfo>
+  </Database>
+</ConfigurationSettings>
