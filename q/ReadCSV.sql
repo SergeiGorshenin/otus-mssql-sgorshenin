@@ -2,6 +2,17 @@ USE bazaar
 
 EXEC dbo.pFirstFillTableBuyers; 
 EXEC dbo.pFirstFillTableSellers; 
+EXEC dbo.pFirstFillTableProductStandards;
+EXEC dbo.pFirstFillTableOrderStatuses;
+EXEC dbo.pFirstFillTablePointsSale;
+
+
+
+
+USE bazaar
+
+EXEC dbo.pFirstFillTableBuyers; 
+EXEC dbo.pFirstFillTableSellers; 
 
 SELECT isnull(max(ID), 0) from dbo.Sellers
 select * from dbo.Sellers
@@ -35,15 +46,15 @@ CREATE TABLE #temp_productStandards(
 
 
 BULK INSERT #temp_pointsSale 
-FROM 'D:\courses\otus\mssql\Проект\Продавцы_Магазины.csv' 
+FROM 'D:\courses\otus\mssql\ГЏГ°Г®ГҐГЄГІ\ГЏГ°Г®Г¤Г ГўГ¶Г»_ГЊГ ГЈГ Г§ГЁГ­Г».csv' 
 WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ';', ROWTERMINATOR = '\n', CODEPAGE = 'ACP', DATAFILETYPE = 'widechar');
 
 BULK INSERT #temp_orderStatuses
-FROM 'D:\courses\otus\mssql\Проект\Статусы_заказа.csv' 
+FROM 'D:\courses\otus\mssql\ГЏГ°Г®ГҐГЄГІ\Г‘ГІГ ГІГіГ±Г»_Г§Г ГЄГ Г§Г .csv' 
 WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ';', ROWTERMINATOR = '\n', CODEPAGE = 'ACP', DATAFILETYPE = 'widechar');
 
 BULK INSERT #temp_productStandards
-FROM 'D:\courses\otus\mssql\Проект\Товары_эталоны.csv' 
+FROM 'D:\courses\otus\mssql\ГЏГ°Г®ГҐГЄГІ\Г’Г®ГўГ Г°Г»_ГЅГІГ Г«Г®Г­Г».csv' 
 WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ';', ROWTERMINATOR = '\n', CODEPAGE = 'ACP', DATAFILETYPE = 'widechar');
 
 SELECT * FROM #temp_sellers
