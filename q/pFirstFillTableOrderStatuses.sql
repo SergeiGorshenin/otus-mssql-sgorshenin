@@ -1,40 +1,37 @@
 use bazaar
 GO
 
-CREATE PROCEDURE dbo.pFirstFillTableBuyers    
+CREATE PROCEDURE dbo.pFirstFillTableOrderStatuses    
 AS   
     SET NOCOUNT ON;  
-		drop table if exists #temp_buyers
+		drop table if exists #temp_orderStatuses
 
-		CREATE TABLE #temp_buyers (
-			[Name] nvarchar(250)   NULL ,
-			[Address] nvarchar(250)  NULL ,
-			[Telephone] nvarchar(70)  NULL ,
-			)
+		CREATE TABLE #temp_orderStatuses(
+			[Name] nvarchar(70)  NOT NULL ,
+			[Description] nvarchar(250)  NULL ,
+		)
 
-
-		BULK INSERT #temp_buyers 
-		FROM 'D:\courses\otus\mssql\Проект\Покупатели.csv' 
+		BULK INSERT #temp_orderStatuses
+		FROM 'D:\courses\otus\mssql\Проект\Статусы_заказа.csv' 
 		WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ';', ROWTERMINATOR = '\n', CODEPAGE = 'ACP', DATAFILETYPE = 'widechar');
 
-		DECLARE @NameN nvarchar(250)
-		DECLARE @AddressN nvarchar(250)
-		DECLARE @TelephoneN nvarchar(70)
+		DECLARE @NameN nvarchar(70)
+		DECLARE @DescriptionN nvarchar(250)
 
-		DECLARE cursor_temp_buyers CURSOR FOR SELECT * FROM #temp_buyers;
-		OPEN cursor_temp_buyers;
+		DECLARE cursor_temp_orderStatuses CURSOR FOR SELECT * FROM #temp_orderStatuses;
+		OPEN cursor_temp_orderStatuses;
 
-		FETCH NEXT FROM cursor_temp_buyers 
-			INTO @NameN, @AddressN, @TelephoneN;
+		FETCH NEXT FROM cursor_temp_orderStatuses 
+			INTO @NameN, @DescriptionN;
 
 		WHILE @@FETCH_STATUS = 0
 		BEGIN
-			exec dbo.pUpdateTableBuyers @NameN, @AddressN, @TelephoneN;
+			exec dbo.pUpdateTableOrderStatuses @NameN, @DescriptionN;
 			-- Обработка данных
-			FETCH NEXT FROM cursor_temp_buyers 
-				INTO @NameN, @AddressN, @TelephoneN;
+			FETCH NEXT FROM cursor_temp_orderStatuses 
+				INTO @NameN, @DescriptionN;
 		END;
 
-		CLOSE cursor_temp_buyers;
+		CLOSE cursor_temp_orderStatuses;
 
-		DEALLOCATE cursor_temp_buyers;
+		DEALLOCATE cursor_temp_orderStatuses;
