@@ -10,7 +10,7 @@ SET XACT_ABORT ON
 BEGIN TRANSACTION QUICKDBD
 
 CREATE TABLE [Buyers] (
-    [ID] bigint  NOT NULL ,
+    [ID] bigint  NOT NULL IDENTITY(1, 1),
     [Name] nvarchar(250)  NOT NULL ,
     [Address] nvarchar(250)  NULL ,
     [Telephone] nvarchar(70)  NULL ,
@@ -20,7 +20,7 @@ CREATE TABLE [Buyers] (
 )
 
 CREATE TABLE [Sellers] (
-    [ID] bigint  NOT NULL ,
+    [ID] bigint  NOT NULL IDENTITY(1, 1),
     [Name] nvarchar(250)  NOT NULL ,
     [INN] nvarchar(70)  NULL ,
     [Address] nvarchar(250)  NOT NULL ,
@@ -30,7 +30,7 @@ CREATE TABLE [Sellers] (
 )
 
 CREATE TABLE [PointsSale] (
-    [ID] bigint  NOT NULL ,
+    [ID] bigint  NOT NULL IDENTITY(1, 1),
     [SellerID] bigint  NOT NULL ,
     [Name] nvarchar(250)  NOT NULL ,
     [Address] nvarchar(250)  NOT NULL ,
@@ -41,7 +41,7 @@ CREATE TABLE [PointsSale] (
 )
 
 CREATE TABLE [ProductStandards] (
-    [ID] int  NOT NULL ,
+    [ID] int  NOT NULL IDENTITY(1, 1),
     [Name] nvarchar(250)  NOT NULL ,
     [Description] nvarchar(1000)  NULL ,
     CONSTRAINT [PK_ProductStandards] PRIMARY KEY CLUSTERED (
@@ -50,7 +50,7 @@ CREATE TABLE [ProductStandards] (
 )
 
 CREATE TABLE [PointSaleProducts] (
-    [ID] bigint  NOT NULL ,
+    [ID] bigint  NOT NULL IDENTITY(1, 1),
     [PointSaleID] bigint  NOT NULL ,
     [ProductStandardID] int  NOT NULL ,
     [ProductInSellerSystemID] nvarchar(70)  NULL ,
@@ -63,7 +63,7 @@ CREATE TABLE [PointSaleProducts] (
 )
 
 CREATE TABLE [ProductPrices] (
-    [ID] bigint  NOT NULL ,
+    [ID] bigint  NOT NULL IDENTITY(1, 1),
     [ProductPointSaleID] bigint  NOT NULL ,
     [Price] decimal(18,2)  NOT NULL ,
     [PriceUpdateDate] datetime2  NOT NULL ,
@@ -79,7 +79,7 @@ CREATE TABLE [ProductRemains] (
 )
 
 CREATE TABLE [OrderStatuses] (
-    [ID] int  NOT NULL ,
+    [ID] int  NOT NULL IDENTITY(1, 1),
     [Name] nvarchar(70)  NOT NULL ,
     [Description] nvarchar(250)  NULL ,
     CONSTRAINT [PK_OrderStatuses] PRIMARY KEY CLUSTERED (
@@ -88,7 +88,7 @@ CREATE TABLE [OrderStatuses] (
 )
 
 CREATE TABLE [Orders] (
-    [ID] bigint  NOT NULL ,
+    [ID] bigint  NOT NULL IDENTITY(1, 1),
     [Date] datetime2  NOT NULL ,
     [PointSaleID] bigint  NOT NULL ,
     [BuyerID] bigint  NOT NULL ,
@@ -101,6 +101,7 @@ CREATE TABLE [Orders] (
 
 CREATE TABLE [LineOrders] (
     [OrderID] bigint  NOT NULL ,
+	[RowID] int  NOT NULL, 
     [ProductPointSaleID] bigint  NOT NULL ,
     [ProductPriceID] bigint  NOT NULL ,
     [QuantityOrdered] decimal(18,3)  NOT NULL ,
