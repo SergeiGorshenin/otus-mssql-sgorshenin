@@ -6,9 +6,12 @@ GO
 	--SELECT dbo.fGetRandomDECIMAL_18_2(RAND(), 1, 2);
 	--SELECT dbo.fGetRandomDate(RAND());
 IF OBJECT_ID (N'dbo.fGetRandomINT', N'FN') IS NOT NULL DROP FUNCTION dbo.fGetRandomINT;
+IF OBJECT_ID (N'dbo.fGetSign', N'FN') IS NOT NULL DROP FUNCTION dbo.fGetSign;
 IF OBJECT_ID (N'dbo.fGetRandomDate', N'FN') IS NOT NULL DROP FUNCTION dbo.fGetRandomDate;
 IF OBJECT_ID (N'dbo.fGetRandomDECIMAL_18_2', N'FN') IS NOT NULL DROP FUNCTION dbo.fGetRandomDECIMAL_18_2;
 IF OBJECT_ID (N'dbo.fGetRandomDECIMAL_18_3', N'FN') IS NOT NULL DROP FUNCTION dbo.fGetRandomDECIMAL_18_3;
+IF OBJECT_ID (N'dbo.fGetRemain', N'FN') IS NOT NULL DROP FUNCTION dbo.fGetRemain;
+IF OBJECT_ID (N'dbo.fGetPrice', N'FN') IS NOT NULL DROP FUNCTION dbo.fGetPrice;
 GO
 
 CREATE FUNCTION fGetRandomINT(@rand float, @from_int int, @to_int int)
@@ -16,6 +19,14 @@ RETURNS INT
 AS
 BEGIN
     RETURN CONVERT(int, (@rand * ((@to_int + 1) - @from_int)) + @from_int);
+END;
+GO
+
+CREATE FUNCTION fGetSign(@rand float)
+RETURNS INT
+AS
+BEGIN
+    RETURN CASE WHEN dbo.fGetRandomINT(@rand, 1, 2) % 2 = 0 THEN -1 ELSE 1 END;
 END;
 GO
 
@@ -35,7 +46,6 @@ BEGIN
 END;
 GO
 
-
 CREATE FUNCTION fGetRandomDate(@rand float)
 RETURNS DateTime2
 AS
@@ -50,7 +60,61 @@ BEGIN
 END;
 GO
 
+CREATE FUNCTION fGetRemain(@ProductPointSaleID bigint, @Date datetime2)
+RETURNS INT
+AS
+BEGIN
+	DECLARE @QuantityOrdered_max decimal(18,3)
+	;
+	WITH cte_remains_max AS
+	(
+		SELECT
+			@ProductPointSaleID as ProductPointSaleID,
+			MAX(ProductRemains.RemainsUpdateDate) as RemainsUpdateDate
+		FROM dbo.ProductRemains as ProductRemains
+		WHERE ProductRemains.ProductPointSaleID = @ProductPointSaleID
+			and ProductRemains.RemainsUpdateDate <= @Date
+	)
+
+	SELECT TOP 1
+		@QuantityOrdered_max = ProductRemains.Remains
+	FROM dbo.ProductRemains as ProductRemains
+	inner join cte_remains_max as cte_remains_max
+		on ProductRemains.ProductPointSaleID = cte_remains_max.ProductPointSaleID
+		and ProductRemains.RemainsUpdateDate = cte_remains_max.RemainsUpdateDate
+	
+	RETURN @QuantityOrdered_max;
+END;
+GO
+
+CREATE FUNCTION fGetPrice(@ProductPointSaleID bigint, @Date datetime2)
+RETURNS TABLE
+AS
+RETURN
+(
+	WITH cte_price AS
+	(
+		SELECT
+			@ProductPointSaleID as ProductPointSaleID,
+			MAX(ProductPrices.PriceUpdateDate) as PriceUpdateDate
+		FROM dbo.ProductPrices as ProductPrices
+		WHERE ProductPrices.ProductPointSaleID = @ProductPointSaleID
+			and ProductPrices.PriceUpdateDate <= @Date
+	)
+
+	SELECT TOP 1
+		ProductPrices.ID,
+		ProductPrices.Price
+	FROM dbo.ProductPrices as ProductPrices
+		inner join cte_price as cte_price
+		on ProductPrices.ProductPointSaleID = cte_price.ProductPointSaleID
+		and ProductPrices.PriceUpdateDate = cte_price.PriceUpdateDate
+);
+GO
+
 -- 1. Подготовка
+DELETE FROM dbo.LineOrders
+DELETE FROM dbo.Orders
 DELETE FROM dbo.ProductPrices
 DELETE FROM dbo.OrderStatuses
 DELETE FROM dbo.PointSaleProducts
@@ -73,6 +137,7 @@ IF OBJECT_ID (N'pMergeTableSellers', N'P')				IS NOT NULL DROP PROCEDURE dbo.pMe
 IF OBJECT_ID (N'pMergeTablePointSaleProducts', N'P')	IS NOT NULL DROP PROCEDURE dbo.pMergeTablePointSaleProducts;
 IF OBJECT_ID (N'pInsertTableProductPrices', N'P')		IS NOT NULL DROP PROCEDURE dbo.pInsertTableProductPrices;
 IF OBJECT_ID (N'pInsertTableProductRemains', N'P')		IS NOT NULL DROP PROCEDURE dbo.pInsertTableProductRemains;
+IF OBJECT_ID (N'pGetRandomPointSaleProducts', N'P')		IS NOT NULL DROP PROCEDURE dbo.pGetRandomPointSaleProducts;
 GO
 
 -- 2. Buyers
@@ -122,7 +187,7 @@ AS
 			)
 
 		BULK INSERT #temp_buyers 
-		FROM 'D:\courses\otus\mssql\Проект\Покупатели.csv' 
+		FROM 'D:\courses\otus-mssql-sgorshenin\project\Покупатели.csv' 
 		WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ';', ROWTERMINATOR = '\n', CODEPAGE = 'ACP', DATAFILETYPE = 'widechar');
 
 		DECLARE @Name nvarchar(250)
@@ -195,7 +260,7 @@ AS
 		)
 
 		BULK INSERT #temp_sellers 
-		FROM 'D:\courses\otus\mssql\Проект\Продавцы.csv' 
+		FROM 'D:\courses\otus-mssql-sgorshenin\project\Продавцы.csv' 
 		WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ';', ROWTERMINATOR = '\n', CODEPAGE = 'ACP', DATAFILETYPE = 'widechar');
 
 		DECLARE @Name nvarchar(250)
@@ -264,7 +329,7 @@ AS
 		)
 
 		BULK INSERT #temp_productStandards
-		FROM 'D:\courses\otus\mssql\Проект\Товары_эталоны.csv' 
+		FROM 'D:\courses\otus-mssql-sgorshenin\project\Товары_эталоны.csv' 
 		WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ';', ROWTERMINATOR = '\n', CODEPAGE = 'ACP', DATAFILETYPE = 'widechar');
 
 		DECLARE @Name nvarchar(250)
@@ -332,7 +397,7 @@ AS
 		)
 
 		BULK INSERT #temp_orderStatuses
-		FROM 'D:\courses\otus\mssql\Проект\Статусы_заказа.csv' 
+		FROM 'D:\courses\otus-mssql-sgorshenin\project\Статусы_заказа.csv' 
 		WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ';', ROWTERMINATOR = '\n', CODEPAGE = 'ACP', DATAFILETYPE = 'widechar');
 
 		DECLARE @Name nvarchar(70)
@@ -410,7 +475,7 @@ AS
 		)
 
 		BULK INSERT #temp_pointsSale 
-		FROM 'D:\courses\otus\mssql\Проект\Продавцы_Магазины.csv' 
+		FROM 'D:\courses\otus-mssql-sgorshenin\project\Продавцы_Магазины.csv' 
 		WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ';', ROWTERMINATOR = '\n', CODEPAGE = 'ACP', DATAFILETYPE = 'widechar');
 
 		DECLARE @SellerID bigint
@@ -515,4 +580,42 @@ AS
     SET NOCOUNT ON;  
 		INSERT INTO dbo.ProductRemains (ProductPointSaleID, Remains, RemainsUpdateDate)
 		VALUES (@ProductPointSaleID, @Remains, @RemainsUpdateDate);
+GO
+
+-- 8. GetRandomPointSaleProducts
+CREATE PROCEDURE dbo.pGetRandomPointSaleProducts
+	@rand float,
+	@PointSaleID bigint
+AS
+BEGIN	
+	DECLARE @temp_PointSaleProducts TABLE (
+		RowNumber INT,
+		ID bigint
+	);
+
+	DECLARE @ProductPointSaleID bigint
+	DECLARE @PointSaleProducts_min bigint
+	DECLARE @PointSaleProducts_max bigint
+
+	INSERT INTO @temp_PointSaleProducts
+	SELECT 
+		ROW_NUMBER() OVER (order by ID) as RowNumber, 
+		PointSaleProducts.ID as ID 
+	FROM dbo.PointSaleProducts as PointSaleProducts
+	WHERE PointSaleProducts.PointSaleID = @PointSaleID
+
+	SELECT 
+		@PointSaleProducts_min = MIN(temp_PointSaleProducts.RowNumber),
+		@PointSaleProducts_max = MAX(temp_PointSaleProducts.RowNumber)
+	FROM @temp_PointSaleProducts as temp_PointSaleProducts
+
+	SET @ProductPointSaleID = dbo.fGetRandomINT(@rand, @PointSaleProducts_min, @PointSaleProducts_max)
+
+	SELECT 
+		@ProductPointSaleID = temp_PointSaleProducts.ID 
+	FROM @temp_PointSaleProducts as temp_PointSaleProducts
+	WHERE temp_PointSaleProducts.RowNumber = @ProductPointSaleID
+
+	RETURN @ProductPointSaleID;
+END;
 GO

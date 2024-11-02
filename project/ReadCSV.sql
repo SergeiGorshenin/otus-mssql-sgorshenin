@@ -31,9 +31,10 @@ FETCH NEXT FROM cursor_temp_pointsSale
 WHILE @@FETCH_STATUS = 0
 BEGIN
 
+	SELECT @ProductStandards_min   = isnull(min(ID), 1) from dbo.ProductStandards
 	SELECT @ProductStandards_max   = isnull(max(ID), 1) from dbo.ProductStandards
-	SELECT @ProductStandardID_rand_1 = dbo.fGetRandomINT(RAND(), 1, @ProductStandards_max)
-	SELECT @ProductStandardID_rand_2 = dbo.fGetRandomINT(RAND(), 1, @ProductStandards_max)
+	SELECT @ProductStandardID_rand_1 = dbo.fGetRandomINT(RAND(), @ProductStandards_min, @ProductStandards_max)
+	SELECT @ProductStandardID_rand_2 = dbo.fGetRandomINT(RAND(), @ProductStandards_min, @ProductStandards_max)
 
 	SET @ProductStandards_min = LEAST(@ProductStandardID_rand_1, @ProductStandardID_rand_2);
 	SET @ProductStandards_max = GREATEST(@ProductStandardID_rand_1, @ProductStandardID_rand_2);
@@ -98,7 +99,7 @@ BEGIN
 	BEGIN
 		
 		SELECT @PriceUpdateDate = dbo.fGetRandomDate(RAND())
-		SELECT @sign = CASE WHEN dbo.fGetRandomINT(RAND(), 1, 2) % 2 = 0 THEN -1 ELSE 1	END
+		SELECT @sign = dbo.fGetSign(RAND())
 		SELECT @price_new = isnull(AVG(Price), dbo.fGetRandomDECIMAL_18_2(RAND(), @price_min, @price_max)) from dbo.ProductPrices where ProductPointSaleID = @ID
 
 		SET @percent_price_change = dbo.fGetRandomDECIMAL_18_2(RAND(), @percent_price_change_min, @percent_price_change_max)
