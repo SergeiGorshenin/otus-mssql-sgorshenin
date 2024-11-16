@@ -71,7 +71,7 @@ ELSE
 		(
 			SELECT
 				*
-			FROM (SELECT N'Œ¯Ë·Í‡ JSON' AS Message) AS T
+			FROM (SELECT N'—ú—à–∏–±–∫–∞ JSON' AS Message) AS T
 			FOR JSON AUTO 
 		)
 	END;

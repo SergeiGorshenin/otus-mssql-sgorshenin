@@ -112,7 +112,7 @@ RETURN
 );
 GO
 
--- 1. Подготовка
+-- 1. РџРѕРґРіРѕС‚РѕРІРєР°
 DELETE FROM dbo.LineOrders
 DELETE FROM dbo.Orders
 DELETE FROM dbo.ProductPrices
@@ -187,7 +187,7 @@ AS
 			)
 
 		BULK INSERT #temp_buyers 
-		FROM 'D:\courses\otus-mssql-sgorshenin\project\Покупатели.csv' 
+		FROM 'D:\courses\otus-mssql-sgorshenin\project\РџРѕРєСѓРїР°С‚РµР»Рё.csv' 
 		WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ';', ROWTERMINATOR = '\n', CODEPAGE = 'ACP', DATAFILETYPE = 'widechar');
 
 		DECLARE @Name nvarchar(250)
@@ -203,7 +203,7 @@ AS
 		WHILE @@FETCH_STATUS = 0
 		BEGIN
 			exec dbo.pMergeTableBuyers @Name, @Address, @Telephone;
-			-- Обработка данных
+			-- РћР±СЂР°Р±РѕС‚РєР° РґР°РЅРЅС‹С…
 			FETCH NEXT FROM cursor_temp_buyers 
 				INTO @Name, @Address, @Telephone;
 		END;
@@ -260,7 +260,7 @@ AS
 		)
 
 		BULK INSERT #temp_sellers 
-		FROM 'D:\courses\otus-mssql-sgorshenin\project\Продавцы.csv' 
+		FROM 'D:\courses\otus-mssql-sgorshenin\project\РџСЂРѕРґР°РІС†С‹.csv' 
 		WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ';', ROWTERMINATOR = '\n', CODEPAGE = 'ACP', DATAFILETYPE = 'widechar');
 
 		DECLARE @Name nvarchar(250)
@@ -276,7 +276,7 @@ AS
 		WHILE @@FETCH_STATUS = 0
 		BEGIN
 			exec dbo.pMergeTableSellers @Name, @INNN, @Address;
-			-- Обработка данных
+			-- РћР±СЂР°Р±РѕС‚РєР° РґР°РЅРЅС‹С…
 			FETCH NEXT FROM cursor_temp_sellers 
 				INTO @Name, @INNN, @Address;
 		END;
@@ -329,7 +329,7 @@ AS
 		)
 
 		BULK INSERT #temp_productStandards
-		FROM 'D:\courses\otus-mssql-sgorshenin\project\Товары_эталоны.csv' 
+		FROM 'D:\courses\otus-mssql-sgorshenin\project\РўРѕРІР°СЂС‹_СЌС‚Р°Р»РѕРЅС‹.csv' 
 		WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ';', ROWTERMINATOR = '\n', CODEPAGE = 'ACP', DATAFILETYPE = 'widechar');
 
 		DECLARE @Name nvarchar(250)
@@ -344,7 +344,7 @@ AS
 		WHILE @@FETCH_STATUS = 0
 		BEGIN
 			exec dbo.pMergeTableProductStandards @Name, @DescriptionN;
-			-- Обработка данных
+			-- РћР±СЂР°Р±РѕС‚РєР° РґР°РЅРЅС‹С…
 			FETCH NEXT FROM cursor_temp_productStandards 
 				INTO @Name, @DescriptionN
 		END;
@@ -397,7 +397,7 @@ AS
 		)
 
 		BULK INSERT #temp_orderStatuses
-		FROM 'D:\courses\otus-mssql-sgorshenin\project\Статусы_заказа.csv' 
+		FROM 'D:\courses\otus-mssql-sgorshenin\project\РЎС‚Р°С‚СѓСЃС‹_Р·Р°РєР°Р·Р°.csv' 
 		WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ';', ROWTERMINATOR = '\n', CODEPAGE = 'ACP', DATAFILETYPE = 'widechar');
 
 		DECLARE @Name nvarchar(70)
@@ -412,7 +412,7 @@ AS
 		WHILE @@FETCH_STATUS = 0
 		BEGIN
 			exec dbo.pMergeTableOrderStatuses @Name, @DescriptionN;
-			-- Обработка данных
+			-- РћР±СЂР°Р±РѕС‚РєР° РґР°РЅРЅС‹С…
 			FETCH NEXT FROM cursor_temp_orderStatuses 
 				INTO @Name, @DescriptionN;
 		END;
@@ -475,7 +475,7 @@ AS
 		)
 
 		BULK INSERT #temp_pointsSale 
-		FROM 'D:\courses\otus-mssql-sgorshenin\project\Продавцы_Магазины.csv' 
+		FROM 'D:\courses\otus-mssql-sgorshenin\project\РџСЂРѕРґР°РІС†С‹_РњР°РіР°Р·РёРЅС‹.csv' 
 		WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ';', ROWTERMINATOR = '\n', CODEPAGE = 'ACP', DATAFILETYPE = 'widechar');
 
 		DECLARE @SellerID bigint
@@ -501,7 +501,7 @@ AS
 		WHILE @@FETCH_STATUS = 0
 		BEGIN
 			exec dbo.pMergeTablePointsSale @SellerID, @Name, @Address, @Telephone;
-			-- Обработка данных
+			-- РћР±СЂР°Р±РѕС‚РєР° РґР°РЅРЅС‹С…
 			FETCH NEXT FROM cursor_temp_pointsSale 
 				INTO @SellerID, @Name, @Address, @Telephone;
 		END;

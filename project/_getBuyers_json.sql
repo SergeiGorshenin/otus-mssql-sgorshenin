@@ -4,7 +4,7 @@ GO
 DECLARE @json nvarchar(MAX)
 DECLARE @responseJson nvarchar(MAX)
 
-SET @json = N'{"Name":"»‚"}';
+SET @json = N'{"Name":"–ò–≤"}';
 
 IF ISJSON(@json) = 1
 	BEGIN
@@ -23,7 +23,7 @@ ELSE
 		(
 			SELECT
 				*
-			FROM (SELECT N'Œ¯Ë·Í‡ JSON' AS Message) AS T
+			FROM (SELECT N'–û—à–∏–±–∫–∞ JSON' AS Message) AS T
 			FOR JSON AUTO 
 		)
 	END;

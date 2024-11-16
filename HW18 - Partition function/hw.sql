@@ -1,11 +1,11 @@
 use bazaar
 go
 
---создадим файловую группу
+--СЃРѕР·РґР°Рј С„Р°Р№Р»РѕРІСѓСЋ РіСЂСѓРїРїСѓ
 ALTER DATABASE [bazaar] ADD FILEGROUP [PricesByPeriod]
 GO
 
---добавляем файл БД
+--РґРѕР±Р°РІР»СЏРµРј С„Р°Р№Р» Р‘Р”
 ALTER DATABASE [bazaar] ADD FILE 
 ( NAME = N'NamePricesByPeriod', FILENAME = N'D:\Microsoft SQL Server\MSSQL16.SQL2022\MSSQL\DATA\PricesByPeriod.ndf' , 
 SIZE = 1097152KB , FILEGROWTH = 65536KB ) TO FILEGROUP [PricesByPeriod]
@@ -13,7 +13,7 @@ GO
 
 --DROP PARTITION SCHEME [schmPricesByPeriod];
 --DROP PARTITION FUNCTION [fnPricesByPeriod];
---создаем функцию партиционирования по годам
+--СЃРѕР·РґР°РµРј С„СѓРЅРєС†РёСЋ РїР°СЂС‚РёС†РёРѕРЅРёСЂРѕРІР°РЅРёСЏ РїРѕ РіРѕРґР°Рј
 CREATE PARTITION FUNCTION [fnPricesByPeriod](datetime2) AS RANGE RIGHT FOR VALUES
 (	
 	'20220101', '20220601', 
@@ -22,7 +22,7 @@ CREATE PARTITION FUNCTION [fnPricesByPeriod](datetime2) AS RANGE RIGHT FOR VALUE
 );
 GO
 
--- партиционируем, используя созданную функцию
+-- РїР°СЂС‚РёС†РёРѕРЅРёСЂСѓРµРј, РёСЃРїРѕР»СЊР·СѓСЏ СЃРѕР·РґР°РЅРЅСѓСЋ С„СѓРЅРєС†РёСЋ
 CREATE PARTITION SCHEME [schmPricesByPeriod] AS PARTITION [fnPricesByPeriod] 
 ALL TO ([PricesByPeriod])
 GO
@@ -31,26 +31,26 @@ SELECT count(*)
 FROM dbo.ProductPrices;
 
 --DROP TABLE dbo.ProductPricesPartitioned;
---создаем таблицу для секционированния 
+--СЃРѕР·РґР°РµРј С‚Р°Р±Р»РёС†Сѓ РґР»СЏ СЃРµРєС†РёРѕРЅРёСЂРѕРІР°РЅРЅРёСЏ 
 SELECT * INTO dbo.ProductPricesPartitioned
 FROM dbo.ProductPrices;
 
 SELECT count(*) 
 FROM dbo.ProductPricesPartitioned;
 
---создание некластерного индекса
+--СЃРѕР·РґР°РЅРёРµ РЅРµРєР»Р°СЃС‚РµСЂРЅРѕРіРѕ РёРЅРґРµРєСЃР°
 ALTER TABLE [dbo].[ProductPrices] ADD CONSTRAINT PK_dbo_ProductPricesPartitioned 
 UNIQUE NONCLUSTERED (ProductPointSaleID, PriceUpdateDate)
 ON [schmPricesByPeriod]([PriceUpdateDate]);
 
---секционированные таблицы в базе данных
+--СЃРµРєС†РёРѕРЅРёСЂРѕРІР°РЅРЅС‹Рµ С‚Р°Р±Р»РёС†С‹ РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…
 select distinct t.name
 from sys.partitions p
 inner join sys.tables t
 	on p.object_id = t.object_id
 where p.partition_number <> 1
 
---секционированные диапазоны
+--СЃРµРєС†РёРѕРЅРёСЂРѕРІР°РЅРЅС‹Рµ РґРёР°РїР°Р·РѕРЅС‹
 SELECT  $PARTITION.fnPricesByPeriod(PriceUpdateDate) AS Partition
 		, COUNT(*) AS [count]
 		, MIN(PriceUpdateDate) as [min]

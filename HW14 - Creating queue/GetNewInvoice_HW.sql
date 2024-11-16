@@ -1,4 +1,4 @@
-CREATE PROCEDURE Sales.GetNewInvoice_HW --будет получать сообщение на таргете
+CREATE PROCEDURE Sales.GetNewInvoice_HW --Р±СѓРґРµС‚ РїРѕР»СѓС‡Р°С‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ РЅР° С‚Р°СЂРіРµС‚Рµ
 AS
 BEGIN
 
@@ -12,44 +12,44 @@ BEGIN
 	
 	BEGIN TRAN; 
 
-	--Получаем сообщение от инициатора которое находится у таргета
-	RECEIVE TOP(1) --обычно одно сообщение, но можно пачкой
-		@TargetDlgHandle = Conversation_Handle, --ИД диалога
-		@Message = Message_Body, --само сообщение
-		@MessageType = Message_Type_Name --тип сообщения( в зависимости от типа можно по разному обрабатывать) обычно два - запрос и ответ
-	FROM dbo.TargetQueueWWI_HW; --имя очереди которую мы ранее создавали
+	--С•РѕР»СѓС‡Р°РµРј СЃРѕРѕР±С‰РµРЅРёРµ РѕС‚ РёРЅРёС†РёР°С‚РѕСЂР° РєРѕС‚РѕСЂРѕРµ РЅР°С…РѕРґРёС‚СЃВ¤ Сѓ С‚Р°СЂРіРµС‚Р°
+	RECEIVE TOP(1) --РѕР±С‹С‡РЅРѕ РѕРґРЅРѕ СЃРѕРѕР±С‰РµРЅРёРµ, РЅРѕ РјРѕР¶РЅРѕ РїР°С‡РєРѕР№
+		@TargetDlgHandle = Conversation_Handle, --В»Ж’ РґРёР°Р»РѕРіР°
+		@Message = Message_Body, --СЃР°РјРѕ СЃРѕРѕР±С‰РµРЅРёРµ
+		@MessageType = Message_Type_Name --С‚РёРї СЃРѕРѕР±С‰РµРЅРёВ¤( РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С‚РёРїР° РјРѕР¶РЅРѕ РїРѕ СЂР°Р·РЅРѕРјСѓ РѕР±СЂР°Р±Р°С‚С‹РІР°С‚СЊ) РѕР±С‹С‡РЅРѕ РґРІР° - Р·Р°РїСЂРѕСЃ Рё РѕС‚РІРµС‚
+	FROM dbo.TargetQueueWWI_HW; --РёРјВ¤ РѕС‡РµСЂРµРґРё РєРѕС‚РѕСЂСѓСЋ РјС‹ СЂР°РЅРµРµ СЃРѕР·РґР°РІР°Р»Рё
 
-	SELECT @Message; --не для прода
+	SELECT @Message; --РЅРµ РґР»В¤ РїСЂРѕРґР°
 
 	SET @xml = CAST(@Message AS XML);
 
-	--достали ИД
-	SELECT @InvoiceID = R.Iv.value('@InvoiceID','INT') --тут используется язык XPath и он регистрозависимый в отличии от TSQL
+	--РґРѕСЃС‚Р°Р»Рё В»Ж’
+	SELECT @InvoiceID = R.Iv.value('@InvoiceID','INT') --С‚СѓС‚ РёСЃРїРѕР»СЊР·СѓРµС‚СЃВ¤ В¤Р·С‹Рє XPath Рё РѕРЅ СЂРµРіРёСЃС‚СЂРѕР·Р°РІРёСЃРёРјС‹Р№ РІ РѕС‚Р»РёС‡РёРё РѕС‚ TSQL
 	FROM @xml.nodes('/RequestMessage/Inv') as R(Iv);
 
 	IF EXISTS (SELECT * FROM Sales.Invoices WHERE InvoiceID = @InvoiceID)
 	BEGIN
 		UPDATE Sales.Invoices
-		SET InvoiceConfirmedForProcessing_HW = GETUTCDATE() --просто устанавливаем текущую дату в ранее созданном нами поле
+		SET InvoiceConfirmedForProcessing_HW = GETUTCDATE() --РїСЂРѕСЃС‚Рѕ СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј С‚РµРєСѓС‰СѓСЋ РґР°С‚Сѓ РІ СЂР°РЅРµРµ СЃРѕР·РґР°РЅРЅРѕРј РЅР°РјРё РїРѕР»Рµ
 		WHERE InvoiceId = @InvoiceID;
 	END;
 	
-	SELECT @Message AS ReceivedRequestMessage, @MessageType; --не для прода
+	SELECT @Message AS ReceivedRequestMessage, @MessageType; --РЅРµ РґР»В¤ РїСЂРѕРґР°
 	
 	-- Confirm and Send a reply
-	IF @MessageType=N'//WWI/SB/RequestMessage' --если наш тип сообщения
+	IF @MessageType=N'//WWI/SB/RequestMessage' --РµСЃР»Рё РЅР°С€ С‚РёРї СЃРѕРѕР±С‰РµРЅРёВ¤
 	BEGIN
-		SET @ReplyMessage =N'<ReplyMessage> Message received</ReplyMessage>'; --ответ
-	    --отправляем сообщение нами придуманное, что все прошло хорошо
+		SET @ReplyMessage =N'<ReplyMessage> Message received</ReplyMessage>'; --РѕС‚РІРµС‚
+	    --РѕС‚РїСЂР°РІР»В¤РµРј СЃРѕРѕР±С‰РµРЅРёРµ РЅР°РјРё РїСЂРёРґСѓРјР°РЅРЅРѕРµ, С‡С‚Рѕ РІСЃРµ РїСЂРѕС€Р»Рѕ С…РѕСЂРѕС€Рѕ
 		SEND ON CONVERSATION @TargetDlgHandle
 		MESSAGE TYPE
 		[//WWI/SB/ReplyMessage]
 		(@ReplyMessage);
-		END CONVERSATION @TargetDlgHandle; --А вот и завершение диалога!!! - оно двухстороннее(пока-пока) ЭТО первый ПОКА
-		                                   --НЕЛЬЗЯ ЗАВЕРШАТЬ ДИАЛОГ ДО ОТПРАВКИ ПЕРВОГО СООБЩЕНИЯ
+		END CONVERSATION @TargetDlgHandle; --С РІРѕС‚ Рё Р·Р°РІРµСЂС€РµРЅРёРµ РґРёР°Р»РѕРіР°!!! - РѕРЅРѕ РґРІСѓС…СЃС‚РѕСЂРѕРЅРЅРµРµ(РїРѕРєР°-РїРѕРєР°) РЃвЂњСњ РїРµСЂРІС‹Р№ С•СњВ С
+		                                   --РЊв‰€Р‹в„–В«СЏ В«СВ¬в‰€вЂ“РЋСвЂњв„– Ж’В»СР‹Сњв€љ Ж’Сњ СњвЂњС•вЂ“СВ¬В В» С•в‰€вЂ“В¬Сњв€љСњ вЂ”СњСњР…Сћв‰€РЊВ»СЏ
 	END 
 	
-	SELECT @ReplyMessage AS SentReplyMessage; --не для прода - это для теста
+	SELECT @ReplyMessage AS SentReplyMessage; --РЅРµ РґР»В¤ РїСЂРѕРґР° - СЌС‚Рѕ РґР»В¤ С‚РµСЃС‚Р°
 
 	COMMIT TRAN;
 END

@@ -1,4 +1,4 @@
---ответ на первое ПОКА
+--РѕС‚РІРµС‚ РЅР° РїРµСЂРІРѕРµ РџРћРљРђ
 CREATE PROCEDURE Sales.ConfirmInvoice_HW
 AS
 BEGIN
@@ -8,15 +8,15 @@ BEGIN
 	
 	BEGIN TRAN; 
 
-	    --Получаем сообщение от таргета которое находится у инициатора
+	    --РџРѕР»СѓС‡Р°РµРј СЃРѕРѕР±С‰РµРЅРёРµ РѕС‚ С‚Р°СЂРіРµС‚Р° РєРѕС‚РѕСЂРѕРµ РЅР°С…РѕРґРёС‚СЃСЏ Сѓ РёРЅРёС†РёР°С‚РѕСЂР°
 		RECEIVE TOP(1)
 			@InitiatorReplyDlgHandle=Conversation_Handle
 			,@ReplyReceivedMessage=Message_Body
 		FROM dbo.InitiatorQueueWWI_HW; 
 		
-		END CONVERSATION @InitiatorReplyDlgHandle; --ЭТО второй ПОКА
+		END CONVERSATION @InitiatorReplyDlgHandle; --Р­РўРћ РІС‚РѕСЂРѕР№ РџРћРљРђ
 		
-		SELECT @ReplyReceivedMessage AS ReceivedRepliedMessage; --не для прода
+		SELECT @ReplyReceivedMessage AS ReceivedRepliedMessage; --РЅРµ РґР»СЏ РїСЂРѕРґР°
 
 	COMMIT TRAN; 
 END
