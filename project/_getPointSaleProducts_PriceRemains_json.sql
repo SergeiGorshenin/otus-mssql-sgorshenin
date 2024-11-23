@@ -71,7 +71,7 @@ ELSE
 		(
 			SELECT
 				*
-			FROM (SELECT N'ќшибка JSON' AS Message) AS T
+			FROM (SELECT N'Ошибка JSON' AS Message) AS T
 			FOR JSON AUTO 
 		)
 	END;

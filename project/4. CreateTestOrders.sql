@@ -46,7 +46,7 @@ BEGIN
 	SET @DeliveryCourier = dbo.fGetRandomINT(RAND(), 0, 1) 
 
 	DECLARE @MaxRowsInOrder int
-	SET @MaxRowsInOrder = dbo.fGetRandomINT(RAND(), 1, 5)
+	SET @MaxRowsInOrder = dbo.fGetRandomINT(RAND(), 1, 7)
 	SET @NewOrderID = 1
 
 	DECLARE @LineOrders TABLE(
@@ -62,8 +62,6 @@ BEGIN
 
 	WHILE (@MaxRowsInOrder > 0)
 	BEGIN
-		print(@MaxRowsInOrder)
-
 		-- PointSaleProducts
 		DECLARE @rand float
 		SET @rand = RAND()
@@ -124,6 +122,8 @@ BEGIN
 
 	COMMIT TRANSACTION create_order
 	
+	DELETE FROM @LineOrders;
+
 	SET @QuantityOrders = @QuantityOrders + 1;
 END
 
