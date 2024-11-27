@@ -1,7 +1,7 @@
-USE bazaar
+п»їUSE bazaar
 GO
 
--- Чистим от предыдущих экспериментов
+-- Р§РёСЃС‚РёРј РѕС‚ РїСЂРµРґС‹РґСѓС‰РёС… СЌРєСЃРїРµСЂРёРјРµРЅС‚РѕРІ
 DROP FUNCTION IF EXISTS dbo.fn_SayHello
 GO
 DROP PROCEDURE IF EXISTS dbo.usp_SayHello
@@ -9,7 +9,7 @@ GO
 DROP ASSEMBLY IF EXISTS SimpleDemoAssembly
 GO
 
--- Включаем CLR
+-- Р’РєР»СЋС‡Р°РµРј CLR
 exec sp_configure 'show advanced options', 1;
 GO
 reconfigure;
@@ -20,24 +20,24 @@ exec sp_configure 'clr strict security', 0
 GO
 
 -- clr strict security 
--- 1 (Enabled): заставляет Database Engine игнорировать сведения PERMISSION_SET о сборках 
--- и всегда интерпретировать их как UNSAFE. По умолчанию, начиная с SQL Server 2017.
+-- 1 (Enabled): Р·Р°СЃС‚Р°РІР»СЏРµС‚ Database Engine РёРіРЅРѕСЂРёСЂРѕРІР°С‚СЊ СЃРІРµРґРµРЅРёСЏ PERMISSION_SET Рѕ СЃР±РѕСЂРєР°С… 
+-- Рё РІСЃРµРіРґР° РёРЅС‚РµСЂРїСЂРµС‚РёСЂРѕРІР°С‚СЊ РёС… РєР°Рє UNSAFE. РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ, РЅР°С‡РёРЅР°СЏ СЃ SQL Server 2017.
 
 reconfigure;
 GO
 
--- Для возможности создания сборок с EXTERNAL_ACCESS или UNSAFE
+-- Р”Р»СЏ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё СЃРѕР·РґР°РЅРёСЏ СЃР±РѕСЂРѕРє СЃ EXTERNAL_ACCESS РёР»Рё UNSAFE
 ALTER DATABASE bazaar SET TRUSTWORTHY ON; 
 
--- Подключаем dll 
+-- РџРѕРґРєР»СЋС‡Р°РµРј dll 
 CREATE ASSEMBLY SplitStringAssembly
 FROM 'D:\courses\otus-mssql-sgorshenin\HW19 - Create CLR\SplitString\bin\Debug\SplitString.dll'
 WITH PERMISSION_SET = SAFE;  
 
--- Посмотреть подключенные сборки (SSMS: <DB> -> Programmability -> Assemblies)
+-- РџРѕСЃРјРѕС‚СЂРµС‚СЊ РїРѕРґРєР»СЋС‡РµРЅРЅС‹Рµ СЃР±РѕСЂРєРё (SSMS: <DB> -> Programmability -> Assemblies)
 SELECT * FROM sys.assemblies
 
--- Подключить функцию из dll - AS EXTERNAL NAME
+-- РџРѕРґРєР»СЋС‡РёС‚СЊ С„СѓРЅРєС†РёСЋ РёР· dll - AS EXTERNAL NAME
 CREATE FUNCTION dbo.fn_SplitString(@text nvarchar(max), @delimiter nchar(1))  
 RETURNS TABLE (
 	part nvarchar(max),
@@ -45,5 +45,5 @@ RETURNS TABLE (
 AS EXTERNAL NAME [SplitStringAssembly].[UserDefinedFunctions].SplitString;
 GO 
 
--- Проверка
+-- РџСЂРѕРІРµСЂРєР°
 SELECT * FROM dbo.fn_SplitString('11,22,33,44,22,33,44,22,33,44,22,33,44,22,33,44', ',')
