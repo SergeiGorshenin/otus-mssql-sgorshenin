@@ -1,19 +1,6 @@
 USE bazaar
 GO
 
--- To allow advanced options to be changed.  
-EXEC sp_configure 'show advanced options', 1;  
-GO  
--- To update the currently configured value for advanced options.  
-RECONFIGURE;  
-GO  
--- To enable the feature.  
-EXEC sp_configure 'xp_cmdshell', 1;  
-GO  
--- To update the currently configured value for this feature.  
-RECONFIGURE;  
-GO  
-
 DECLARE @ID bigint
 DECLARE @order_json nvarchar(MAX)
 DECLARE @header_json nvarchar(MAX)
@@ -22,7 +9,7 @@ DECLARE @cmd nvarchar(MAX)
 DECLARE @sql varchar(8000) 
 
 DECLARE cursor_id_order CURSOR FOR 
-	SELECT TOP 10
+	SELECT TOP 1
 		ID
 	FROM dbo.Orders
 OPEN cursor_id_order;

@@ -75,10 +75,10 @@ DECLARE @percent_price_change decimal(18, 2)
 DECLARE @percent_price_change_min decimal(18, 2)
 DECLARE @percent_price_change_max decimal(18, 2)
 
-SET @quantity_prices_min = 10
-SET @quantity_prices_max = 100
-SET @price_min = 30
-SET @price_max = 2000
+SET @quantity_prices_min = 50
+SET @quantity_prices_max = 300
+SET @price_min = 70
+SET @price_max = 500
 SET @percent_price_change_min = 0.5
 SET @percent_price_change_max = 5.0
 

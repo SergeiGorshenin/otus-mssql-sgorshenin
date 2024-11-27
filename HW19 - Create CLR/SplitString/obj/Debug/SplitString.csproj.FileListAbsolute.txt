@@ -1,0 +1,6 @@
+D:\courses\otus-mssql-sgorshenin\HW19 - Create CLR\SplitString\bin\Debug\SplitString.dll
+D:\courses\otus-mssql-sgorshenin\HW19 - Create CLR\SplitString\bin\Debug\SplitString.pdb
+D:\courses\otus-mssql-sgorshenin\HW19 - Create CLR\SplitString\obj\Debug\SplitString.csproj.AssemblyReference.cache
+D:\courses\otus-mssql-sgorshenin\HW19 - Create CLR\SplitString\obj\Debug\SplitString.csproj.CoreCompileInputs.cache
+D:\courses\otus-mssql-sgorshenin\HW19 - Create CLR\SplitString\obj\Debug\SplitString.dll
+D:\courses\otus-mssql-sgorshenin\HW19 - Create CLR\SplitString\obj\Debug\SplitString.pdb

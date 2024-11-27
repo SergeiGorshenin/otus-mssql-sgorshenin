@@ -6,8 +6,13 @@ DECLARE @json_LinesOrder NVARCHAR(max);
 
 SELECT @json = BulkColumn
 FROM OPENROWSET
-(BULK 'D:\courses\otus-mssql-sgorshenin\project\json\orders\19912.json', SINGLE_CLOB)
+(BULK 'D:\courses\otus-mssql-sgorshenin\project\json\orders\1.json', SINGLE_CLOB)
 AS DATA;
+
+--SET STATISTICS IO ON
+--SET STATISTICS TIME ON
+DECLARE @StartTime DATETIME2, @EndTime DATETIME2;
+SET @StartTime = SYSDATETIME();
 
 -- Order
 DECLARE @NewOrderID bigint
@@ -122,3 +127,15 @@ FROM @LineOrders AS LineOrders;
 COMMIT TRANSACTION create_order
 	
 DELETE FROM @LineOrders;
+
+--SET STATISTICS IO OFF
+--SET STATISTICS TIME OFF
+SET @EndTime = SYSDATETIME();
+
+SELECT 
+    @StartTime AS StartTime,
+    @EndTime AS EndTime,
+    DATEDIFF(MILLISECOND, @StartTime, @EndTime) AS ExecutionTimeInMilliseconds,
+    DATEDIFF(SECOND, @StartTime, @EndTime) AS ExecutionTimeInSeconds;
+
+--print(@NewOrderID)

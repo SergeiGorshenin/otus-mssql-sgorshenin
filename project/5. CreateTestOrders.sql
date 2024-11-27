@@ -75,7 +75,6 @@ BEGIN
 
 		-- ProductRemains
 		DECLARE @QuantityOrdered_max decimal(18,3)
-		--SET @QuantityOrdered_max = LEAST(dbo.fGetRemain(@ProductPointSaleID, @Date), 3)
 		SET @QuantityOrdered_max = dbo.fGetRandomINT(RAND(), 1, 5)
 
 		SET @QuantityOrdered = dbo.fGetRandomINT(RAND(), 1, @QuantityOrdered_max);
