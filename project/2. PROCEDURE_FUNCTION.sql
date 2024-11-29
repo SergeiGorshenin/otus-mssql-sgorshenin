@@ -2,9 +2,6 @@ USE bazaar;
 GO
 
 -- main function
-	--SELECT dbo.fGetRandomINT(RAND(), 1, 2)
-	--SELECT dbo.fGetRandomDECIMAL_18_2(RAND(), 1, 2);
-	--SELECT dbo.fGetRandomDate(RAND());
 IF OBJECT_ID (N'dbo.fGetRandomINT', N'FN') IS NOT NULL DROP FUNCTION dbo.fGetRandomINT;
 IF OBJECT_ID (N'dbo.fGetSign', N'FN') IS NOT NULL DROP FUNCTION dbo.fGetSign;
 IF OBJECT_ID (N'dbo.fGetRandomDate', N'FN') IS NOT NULL DROP FUNCTION dbo.fGetRandomDate;
